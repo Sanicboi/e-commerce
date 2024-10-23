@@ -1,0 +1,4 @@
+*.log
+*.env
+*.htpasswd
+node_modules
