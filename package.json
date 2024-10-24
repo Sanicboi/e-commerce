@@ -11,7 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.21.1",
+    "pg": "^8.13.1",
     "pino": "^9.5.0",
+    "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
