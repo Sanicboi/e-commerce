@@ -7,6 +7,11 @@ export interface ILoginCredentials {
   password: string;
 }
 
+export interface ISignupCredentials {
+  email: string;
+  password: string;
+}
+
 export class Sanitizer {
   public static loginCredentials(data: any): ILoginCredentials {
     if (
@@ -23,6 +28,24 @@ export class Sanitizer {
     if (
       !(data.type === "email" && RegexTester.isEmail(data.value)) ||
       !(data.type == "phone" && RegexTester.isPhone(data.value))
+    )
+      throw new InvalidRequestFieldError();
+
+    return data;
+  }
+
+  public static signupCredentials(data: any): ISignupCredentials {
+    if (
+      !data.email ||
+      !data.password ||
+      typeof data.email !== "string" ||
+      typeof data.password !== "string"
+    )
+      throw new InvalidRequestBodyError();
+
+    if (
+      !RegexTester.isStrongPassword(data.password) ||
+      !RegexTester.isEmail(data.email)
     )
       throw new InvalidRequestFieldError();
 

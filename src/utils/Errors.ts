@@ -36,3 +36,9 @@ export class UnauthorizedError extends HttpError {
     super("Unauthorized", 401);
   }
 }
+
+export class ConflictError extends HttpError {
+  constructor() {
+    super("Conflict", 409);
+  }
+}

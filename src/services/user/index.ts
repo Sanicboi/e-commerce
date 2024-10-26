@@ -2,14 +2,13 @@ import express from "express";
 import { dataSource } from "../../db";
 import { Sanitizer } from "../../utils/Sanitizer";
 import {
+  ConflictError,
   HttpError,
-  InvalidRequestError,
   NotFoundError,
   UnauthorizedError,
 } from "../../utils/Errors";
 import { User } from "../../db/entities/User";
 import bcrypt from "bcrypt";
-import { SecretsManager } from "../../utils/SecretsManager";
 import { JWT } from "./JWT";
 
 const app = express();
@@ -40,6 +39,42 @@ dataSource.initialize().then(() => {
 
       res
         .status(200)
+        .json({
+          token,
+        })
+        .end();
+    } catch (err) {
+      if (err instanceof HttpError) {
+        res.status(err.code).end();
+      } else {
+        res.status(500).end();
+      }
+    }
+  });
+
+  app.post("/api/signup", async (req, res) => {
+    try {
+      const data = Sanitizer.signupCredentials(req.body);
+
+      const exists = await userRepo
+        .createQueryBuilder("user")
+        .select()
+        .where("user.email = :email", {
+          email: data.email,
+        })
+        .getExists();
+
+      if (exists) throw new ConflictError();
+
+      const user = new User();
+      user.email = data.email;
+      user.password = await bcrypt.hash(data.password, 15);
+      await userRepo.save(user);
+
+      const token = JWT.sign(user.id);
+
+      res
+        .status(201)
         .json({
           token,
         })
