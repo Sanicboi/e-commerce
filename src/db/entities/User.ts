@@ -22,4 +22,7 @@ export class User {
 
   @Column("date")
   dateOfBirth: Date;
+
+  @Column()
+  password: string;
 }
