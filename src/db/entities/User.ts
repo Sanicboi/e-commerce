@@ -5,22 +5,32 @@ export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   firstName: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   lastName: string;
 
   @Column()
   email: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   phone: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   address: string;
 
-  @Column("date")
+  @Column("date", {
+    nullable: true
+  })
   dateOfBirth: Date;
 
   @Column()

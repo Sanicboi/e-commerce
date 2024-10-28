@@ -2,3 +2,4 @@
 *.env
 *.htpasswd
 node_modules
+build

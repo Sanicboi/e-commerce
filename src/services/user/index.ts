@@ -1,3 +1,8 @@
+import path from 'path';
+require('dotenv').config({
+  path: path.join(process.cwd(), '.env')
+});
+
 import express from "express";
 import { dataSource } from "../../db";
 import { Sanitizer } from "../../utils/Sanitizer";
@@ -10,9 +15,27 @@ import {
 import { User } from "../../db/entities/User";
 import bcrypt from "bcrypt";
 import { JWT } from "./JWT";
+import pino from 'pino-http';
+
+
+
+
 
 const app = express();
+app.use(pino({
+  customLogLevel: (req, res, err) => {
+    if (res.statusCode >= 400 && res.statusCode < 500) {
+      return 'warn'
+    } else if (res.statusCode >= 500 || err) {
+      return 'error'
+    } else if (res.statusCode >= 300 && res.statusCode < 400) {
+      return 'silent'
+    }
+    return 'info'
+  }
+}));
 app.use(express.json());
+
 
 dataSource.initialize().then(() => {
   const userRepo = dataSource.getRepository(User);
@@ -87,4 +110,7 @@ dataSource.initialize().then(() => {
       }
     }
   });
+
+
+  app.listen(80);
 });

@@ -5,3 +5,4 @@
 - [ ] Set up user microservice
 - [ ] Set up frontend UI
 - [ ] Set up product catalog microservice
+- [ ] Set up product cart microservice
