@@ -25,6 +25,12 @@ export class InvalidRequestFieldError extends InvalidRequestError {
   }
 }
 
+export class InvalidRequestHeaderError extends InvalidRequestError {
+  constructor() {
+    super("Invalid request header");
+  }
+}
+
 export class NotFoundError extends HttpError {
   constructor() {
     super("Not found", 404);

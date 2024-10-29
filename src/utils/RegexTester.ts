@@ -11,7 +11,12 @@ export class RegexTester {
   }
 
   public static isStrongPassword(str: string): boolean {
-    const r = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    const r = /^(?=.*\d)(?=.*[!@#$%^&*_-])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    return r.test(str);
+  }
+
+  public static isAlphabetical(str: string): boolean {
+    const r = /^[A-Za-z]$/;
     return r.test(str);
   }
 }

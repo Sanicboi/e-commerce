@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import { SecretsManager } from "../../utils/SecretsManager";
-import { UnauthorizedError } from "../../utils/Errors";
+import { SecretsManager } from "./SecretsManager";
+import { UnauthorizedError } from "./Errors";
 
 export class JWT {
   public static sign(id: string): string {

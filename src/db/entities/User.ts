@@ -6,12 +6,12 @@ export class User {
   id: string;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   firstName: string;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   lastName: string;
 
@@ -19,17 +19,17 @@ export class User {
   email: string;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   phone: string;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   address: string;
 
   @Column("date", {
-    nullable: true
+    nullable: true,
   })
   dateOfBirth: Date;
 

@@ -1,6 +1,6 @@
-import path from 'path';
-require('dotenv').config({
-  path: path.join(process.cwd(), '.env')
+import path from "path";
+require("dotenv").config({
+  path: path.join(process.cwd(), ".env"),
 });
 
 import express from "express";
@@ -14,28 +14,28 @@ import {
 } from "../../utils/Errors";
 import { User } from "../../db/entities/User";
 import bcrypt from "bcrypt";
-import { JWT } from "./JWT";
-import pino from 'pino-http';
-
-
-
-
+import { JWT } from "../../utils/JWT";
+import pino from "pino-http";
+import { Authenticator } from "../../utils/Authenticator";
+import { ErrorHandler } from "../../utils/ErrorHandler";
+import { JsonWebTokenError } from "jsonwebtoken";
 
 const app = express();
-app.use(pino({
-  customLogLevel: (req, res, err) => {
-    if (res.statusCode >= 400 && res.statusCode < 500) {
-      return 'warn'
-    } else if (res.statusCode >= 500 || err) {
-      return 'error'
-    } else if (res.statusCode >= 300 && res.statusCode < 400) {
-      return 'silent'
-    }
-    return 'info'
-  }
-}));
+app.use(
+  pino({
+    customLogLevel: (req, res, err) => {
+      if (res.statusCode >= 400 && res.statusCode < 500) {
+        return "warn";
+      } else if (res.statusCode >= 500 || err) {
+        return "error";
+      } else if (res.statusCode >= 300 && res.statusCode < 400) {
+        return "silent";
+      }
+      return "info";
+    },
+  }),
+);
 app.use(express.json());
-
 
 dataSource.initialize().then(() => {
   const userRepo = dataSource.getRepository(User);
@@ -67,11 +67,7 @@ dataSource.initialize().then(() => {
         })
         .end();
     } catch (err) {
-      if (err instanceof HttpError) {
-        res.status(err.code).end();
-      } else {
-        res.status(500).end();
-      }
+      ErrorHandler.handleHttp(req, res, err);
     }
   });
 
@@ -91,7 +87,7 @@ dataSource.initialize().then(() => {
 
       const user = new User();
       user.email = data.email;
-      user.password = await bcrypt.hash(data.password, 15);
+      user.password = await bcrypt.hash(data.password, 10);
       await userRepo.save(user);
 
       const token = JWT.sign(user.id);
@@ -103,14 +99,24 @@ dataSource.initialize().then(() => {
         })
         .end();
     } catch (err) {
-      if (err instanceof HttpError) {
-        res.status(err.code).end();
-      } else {
-        res.status(500).end();
-      }
+      ErrorHandler.handleHttp(req, res, err);
     }
   });
 
+  app.post("/api/profile", Authenticator.authenticate, async (req, res) => {
+    try {
+      const data = Sanitizer.profileInfo(req.body);
+      req.user.address = data.address;
+      req.user.dateOfBirth = data.dateOfBirth;
+      req.user.firstName = data.firstName;
+      req.user.lastName = data.lastName;
+      req.user.phone = data.phone;
+      await userRepo.save(req.user);
+      res.status(201).end();
+    } catch (err) {
+      ErrorHandler.handleHttp(req, res, err);
+    }
+  });
 
   app.listen(80);
 });
